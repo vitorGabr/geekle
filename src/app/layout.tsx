@@ -11,8 +11,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="pt-BR">
+      <body>
+        <div className="w-full bg-black py-6" >
+          <h1 className="text-4xl font-bold text-center text-white">Geekle</h1>
+        </div>
+        {children}
+        </body>
     </html>
   )
 }

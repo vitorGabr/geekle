@@ -1,0 +1,1 @@
+export type WordResult = 'almost' | 'correct' | 'wrong';
