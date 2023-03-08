@@ -3,15 +3,15 @@ import { fetchDayWord } from "@/services/fetchDayWord";
 
 export default async function Home() {
   
-  const data = await fetchDayWord();
+  // const data = await fetchDayWord();
 
   return (
     <main
       className="bg-black w-full"
     >
-      <WordsBox 
+      {/* <WordsBox 
         expectedWord={data?.word || "ureia"}
-      />
+      /> */}
     </main>
   )
 }
