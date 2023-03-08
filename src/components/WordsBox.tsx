@@ -36,7 +36,6 @@ export const WordsBox = ({
       //   alert('Word is not valid');
       //   return;
       // }
-
     
       const expectedWordAlmost = word.split('')
       .filter((w, i) => expectedWord.includes(w) && w !== expectedWord[i])
@@ -52,13 +51,11 @@ export const WordsBox = ({
         return 'wrong';
       });
 
-      setShowCompletedGame(true);
       setCurrentRow(currentRow + 1);
       setResultWords([...resultWords, result]);
       setWords([...words, word]);
       setCurrentItem(0);
       setWord('');
-
       if( word === expectedWord) {
         setShowCompletedGame(true);
         return;
