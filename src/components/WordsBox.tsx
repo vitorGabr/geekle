@@ -20,15 +20,16 @@ export const WordsBox = ({
   const [resultWords, setResultWords] = useState<WordResult[][]>([]);
   const [showCompletedGame, setShowCompletedGame] = useState(false);
 
-  const [word, setWord] = useState<string>('');
   const expectedWordLenght = expectedWord.length;
+  const [word, setWord] = useState<string>(new Array(expectedWordLenght).fill(' ').join(''));
+
 
   const handleKeyDown = async (e: KeyboardEvent) => {
     if(showCompletedGame) return;
     let newWord = word.split('');
 
     if (e.key === 'Enter') {
-      if (word.length < expectedWordLenght) {
+      if (newWord.filter(k=> k != ' ').length < expectedWordLenght) {
         return;
       }
       // const valid = await verifyIfWordIsValid(word);
@@ -55,7 +56,7 @@ export const WordsBox = ({
       setResultWords([...resultWords, result]);
       setWords([...words, word]);
       setCurrentItem(0);
-      setWord('');
+      setWord(new Array(expectedWordLenght).fill(' ').join(''));
       if( word === expectedWord) {
         setShowCompletedGame(true);
         return;
@@ -63,14 +64,13 @@ export const WordsBox = ({
       return;
     }
     if (e.key === 'Backspace') {
-      newWord[currentItem] = '';
+      newWord[currentItem] = ' ';
       setCurrentItem((currentItem) => currentItem - 1 < 0 ? 0 : currentItem - 1);
     }
     if (/^[a-zA-Z]$/.test(e.key)) {
       newWord[currentItem] = e.key;
       setCurrentItem(currentItem => currentItem + 1 > (expectedWordLenght - 1) ? (expectedWordLenght - 1) : currentItem + 1);
     }
-
     setWord(newWord.join(''));
   }
 
