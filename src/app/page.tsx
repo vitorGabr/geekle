@@ -1,6 +1,8 @@
 import { WordsBox } from "@/components/WordsBox"
 import { fetchDayWord } from "@/services/fetchDayWord";
 
+export const runtime = 'experimental-edge';
+
 export default async function Home() {
   
   const data = await fetchDayWord();
