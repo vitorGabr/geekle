@@ -36,6 +36,8 @@ export const WordsBox = ({
       //   alert('Word is not valid');
       //   return;
       // }
+
+    
       const expectedWordAlmost = word.split('')
       .filter((w, i) => expectedWord.includes(w) && w !== expectedWord[i])
       .map((item) => word.indexOf(item))
@@ -48,7 +50,7 @@ export const WordsBox = ({
           return 'almost';
         }
         return 'wrong';
-      })
+      });
 
       setShowCompletedGame(true);
       setCurrentRow(currentRow + 1);
@@ -56,6 +58,11 @@ export const WordsBox = ({
       setWords([...words, word]);
       setCurrentItem(0);
       setWord('');
+
+      if( word === expectedWord) {
+        setShowCompletedGame(true);
+        return;
+      }
       return;
     }
     if (e.key === 'Backspace') {
