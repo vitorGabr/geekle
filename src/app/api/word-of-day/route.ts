@@ -3,7 +3,9 @@ import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request) {
+export const dynamic = 'force-dynamic'
+
+export async function GET() {
   try {
     const word = await prisma.word.findFirst({
       where: {
