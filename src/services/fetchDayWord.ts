@@ -1,5 +1,5 @@
 export const fetchDayWord = async () => {
-    const response = await fetch("http:/localhost:3000/api/word-of-day",{
+    const response = await fetch(process.env.BASE_URL +"/api/word-of-day",{
         next: {
             revalidate: false
         }
