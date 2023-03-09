@@ -8,7 +8,15 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
     try {
         let randomWord = '';
-        const response = await fetch('https://api.dicionario-aberto.net/random');
+        const response = await fetch('https://api.dicionario-aberto.net/random', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            next: {
+                revalidate: 0
+            }
+        });
         const data = await response.json();
         randomWord = data.word;
 
@@ -25,17 +33,6 @@ export async function GET() {
 
         return NextResponse.json('ok');
     } catch (error) {
-        console.error(error);
-        if (error instanceof Error) {
-            return NextResponse.json(JSON.stringify(error.message), {
-                status: 500
-            });
-        }
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            return NextResponse.json(JSON.stringify(error.message), {
-                status: 500
-            });
-        }
         return NextResponse.json(JSON.stringify(error), {
             status: 500
         });
