@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic';
 
-export async function POST() {
+export async function GET() {
     try {
         let randomWord = '';
         const response = await fetch('https://api.dicionario-aberto.net/random');
