@@ -14,11 +14,11 @@ export const WordItem = ({ onClick, value, isFocused, result }: Props) => {
 
     return <div
         onClick={onClick}
-        style={{
-            width: '3.7rem',
-            height: '3.7rem',
-        }}
         className={`
+            h-12
+            w-12
+            2xl:h-16
+            2xl:w-16
             border-2
             overflow-visible
             cursor-pointer

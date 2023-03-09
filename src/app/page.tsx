@@ -1,17 +1,23 @@
 import { WordsBox } from "@/components/WordsBox"
-import { fetchDayWord } from "@/services/fetchDayWord";
-
-export const runtime = 'experimental-edge';
+import { ApiRoute } from "@/types/enums/ApiRoute";
 
 export default async function Home() {
-  
-  const data = await fetchDayWord();
+
+  const response = await fetch(process.env.BASE_URL + ApiRoute.WORD_OF_DAY, {
+    next: {
+      revalidate: 3600
+    }
+  });
+  const data = await response.json() as {
+    word: string;
+  } | undefined;
+
 
   return (
     <main
-      className="bg-black w-full"
+      className="bg-black w-full h-full"
     >
-      <WordsBox 
+      <WordsBox
         expectedWord={data?.word || "ureia"}
       />
     </main>

@@ -1,5 +1,6 @@
 import { WordResult } from "@/types/WordResult";
-import { KeyBoardItem } from "./KeyBoardItem";
+import { KeyBoardItem } from "../KeyboardItem";
+import styles from './keyboard.module.css';
 
 const keys: string[][] = [
     ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
@@ -9,7 +10,6 @@ const keys: string[][] = [
 
 type Props = {
     onPress: (key: string) => void,
-    wordTyped?: string,
     wordResult?: {
         value: string,
         result: WordResult,
@@ -18,17 +18,17 @@ type Props = {
 
 export const KeyBoard = ({
     onPress,
-    wordTyped,
     wordResult,
 }: Props) => {
+
     return <div
-        className="flex flex-col gap-2"
+        className={'mx-auto w-11/12 md:w-1/2 2xl:w-1/2 flex flex-col justify-center items-center mb-2 gap-1'}
     >
         {
             keys.map((row, i) => {
                 return <div
                     key={i}
-                    className="flex justify-center gap-2">
+                    className="flex w-full justify-center gap-1 items-center">
                     {
                         row.map((key, j) => {
                             const result = wordResult?.find((r) => r.value === key);

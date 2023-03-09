@@ -1,0 +1,47 @@
+.key{
+    @apply 
+        border-2
+        border-neutral-600 
+        rounded-lg 
+        text-sm 
+        md:text-xl 
+        font-bold 
+        cursor-pointer
+        hover:bg-neutral-700
+        col-span-1
+        transition-all
+        duration-300
+       text-white;
+
+    display: flex;
+    padding: 0.5rem 0;
+    width: 100%;
+    max-width: 4rem;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.keyContainer {
+    @apply 
+        border-2
+        border-green-600 
+        rounded-lg 
+        text-sm 
+        md:text-xl 
+        font-bold 
+        cursor-pointer
+        hover:bg-green-700
+        col-span-1
+        transition-all
+        duration-300
+        bg-green-500;
+       display: flex;
+    padding: 0.5rem 0;
+    width: 100%;
+    max-width: 6rem;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+

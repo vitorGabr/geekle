@@ -2,7 +2,7 @@
 
 import { WordResult } from "@/types/WordResult";
 import { useEffect, useState } from "react";
-import { KeyBoard } from "./KeyBoard";
+import { KeyBoard } from "./Keyboard";
 import { WordItem } from "./WordItem";
 
 type Props = {
@@ -104,10 +104,10 @@ export const WordsBox = ({
 
 
   return <div
-    className="flex flex-col items-center justify-center gap-1"
+    className="flex flex-col items-center justify-center gap-1 h-full"
   >
     <div
-      className="mt-10 mb-2 gap-1 flex flex-col"
+      className="mt-5 mb-2 gap-1 flex flex-1 flex-col justify-center items-center"
     >
       {[...Array(expectedWordLenght + 1)].map((_, index) => {
         return <div
@@ -135,7 +135,6 @@ export const WordsBox = ({
       onPress={(key) => {
         handleKeyDown({ key } as KeyboardEvent);
       }}
-      wordTyped={words[currentRow - 1]}
       wordResult={typedWord()}
     />
     {/* {
