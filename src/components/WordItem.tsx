@@ -1,41 +1,53 @@
-import { WordResult } from "@/types/WordResult";
+import { WordResultType } from "@/types/enums/WordResultType";
+import { Center } from "@chakra-ui/react";
+import { ComponentProps, useMemo } from "react";
 
 type Props = {
     onClick: () => void,
     value?: string,
     isFocused?: boolean
-    result?: WordResult;
+    result?: WordResultType;
 }
 
 export const WordItem = ({ onClick, value, isFocused, result }: Props) => {
 
-    const border = isFocused ? 'border-white' : 'border-gray-600';
-    const bg = result === 'correct' ? 'bg-green-500' : result === 'almost' ? 'bg-yellow-500' : result === 'wrong' ? 'bg-neutral-900' : 'bg-black/10';
+    const border: ComponentProps<typeof Center>['bgColor'] = isFocused ? 'blue.500' : 'gray.700';
+    const bg: ComponentProps<typeof Center>['bgColor'] = useMemo(() => {
+        switch (result) {
+            case WordResultType.CORRECT:
+                return 'green.500';
+            case WordResultType.INCORRECT:
+                return 'red.500';
+            case WordResultType.ALMOST:
+                return 'yellow.500';
+            default:
+                return 'gray.800';
+        }
+    }, [result]);
 
-    return <div
+    return <Center
         onClick={onClick}
-        className={`
-            h-12
-            w-12
-            2xl:h-16
-            2xl:w-16
-            border-2
-            overflow-visible
-            cursor-pointer
-            ${border} 
-            rounded-lg 
-            flex 
-            items-center 
-            justify-center 
-            text-3xl 
-            font-extrabold
-            text-white 
-            transition-all
-            duration-300
-            xl:text-2xl
-            ${bg}
-        `}
+        w={{
+            base: '4.5rem',
+            md: '3.2rem',
+        }}
+        h={{
+            base: '4.5rem',
+            md: '3.2rem',
+        }}
+        rounded="lg"
+        border="2px"
+        borderColor={border}
+        bgColor={bg}
+        fontWeight="bold"
+        color="white"
+        cursor="pointer"
+        transition="all 0.3s"
+        fontSize={{
+            base: '1rem',
+            md: '1.5rem',
+        }}
     >
         {value?.toUpperCase()}
-    </div>
+    </Center>
 }

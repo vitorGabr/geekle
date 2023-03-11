@@ -1,4 +1,5 @@
-import { WordResult } from '@/types/WordResult';
+import { WordResultType } from '@/types/enums/WordResultType';
+import { Flex, Stack } from '@chakra-ui/react';
 import { KeyBoardItem } from '../KeyboardItem';
 
 const keys: string[][] = [
@@ -11,37 +12,44 @@ type Props = {
   onPress: (key: string) => void;
   wordResult?: {
     value: string;
-    result: WordResult;
+    result: WordResultType;
   }[];
 };
 
 export const KeyBoard = ({ onPress, wordResult }: Props) => {
   return (
-    <div
-      className={
-        'mx-auto mb-2 flex w-11/12 flex-col items-center justify-center gap-1 md:w-1/2 2xl:w-1/2'
-      }
+    <Stack
+      pb={4}
+      spacing={2}
+      w="100%"
+      justifyContent="center"
+      alignItems="center"
     >
       {keys.map((row, i) => {
         return (
-          <div
+          <Flex
             key={i}
-            className="flex w-full items-center justify-center gap-1"
+            gap={2}
+            w={{
+              base: '100%',
+              md: 'auto',
+            }}
+            alignItems="stretch"
           >
             {row.map((key, j) => {
-              const result = wordResult?.find((r) => r.value === key);
+              const data = wordResult?.find((r) => r.value === key);
               return (
                 <KeyBoardItem
                   key={j}
-                  result={result?.result}
+                  result={data?.result}
                   onClick={() => onPress(key)}
                   value={key}
                 />
               );
             })}
-          </div>
+          </Flex>
         );
       })}
-    </div>
+    </Stack>
   );
 };

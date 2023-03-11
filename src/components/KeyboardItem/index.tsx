@@ -1,49 +1,86 @@
-import { WordResult } from '@/types/WordResult';
+import { WordResultType } from '@/types/enums/WordResultType';
+import { ResultWord } from '@/types/ResultWord';
+import { Center } from '@chakra-ui/react';
 import { Delete } from 'lucide-react';
-import { ComponentProps } from 'react';
-import styles from './keyboardItem.module.css';
+import { ComponentProps, useMemo } from 'react';
 
 type Props = {
   onClick: () => void;
-  result?: WordResult;
+  result?: WordResultType;
   value?: string;
 };
 
 export const KeyBoardItem = ({ onClick, value, result }: Props) => {
   if (value === 'Backspace') {
     return (
-      <div onClick={onClick} className={styles.key}>
+      <Center
+        onClick={onClick}
+        borderRadius="lg"
+        border={'2px'}
+        borderColor={'red.900'}
+        px={4}
+        bgColor={'red.600'}
+        cursor="pointer"
+        color={'white'}
+      >
         <Delete />
-      </div>
+      </Center>
     );
   }
 
   if (value === 'Enter') {
     return (
-      <div onClick={onClick} className={styles.keyContainer}>
+      <Center
+        onClick={onClick}
+        borderRadius="lg"
+        border={'2px'}
+        borderColor={'green.900'}
+        px={4}
+        bgColor={'green.600'}
+        cursor="pointer"
+        color={'white'}
+        fontWeight={'bold'}
+      >
         Enter
-      </div>
+      </Center>
     );
   }
 
-  let bg =
-    result === 'correct'
-      ? 'bg-green-600'
-      : result === 'wrong'
-      ? 'bg-neutral-800'
-      : '';
+  let bg: ComponentProps<typeof Center>['bgColor'] = useMemo(() => {
+    switch (result) {
+      case WordResultType.CORRECT:
+        return 'green.600';
+      case WordResultType.INCORRECT:
+        return 'red.600';
+      case WordResultType.ALMOST:
+        return 'yellow.600';
+      default:
+        return 'gray.800';
+    }
+  }, [result]);
 
   return (
-    <div onClick={onClick} className={`${styles.key} ${bg}`}>
+    <Center
+      onClick={onClick}
+      w={{
+        base: '10%',
+        md: '3.5vw',
+      }}
+      h={{
+        base: '8vh',
+        md: '3.5vw',
+      }}
+      bgColor={bg}
+      rounded="lg"
+      color={'white'}
+      fontSize="xl"
+      fontWeight={'bold'}
+      cursor="pointer"
+      _hover={{
+        bg: 'gray.700',
+      }}
+    >
       {value?.toLocaleUpperCase()}
-    </div>
-  );
-};
-
-const Container = ({ children }: ComponentProps<'div'>) => {
-  return (
-    <div className="col-span-1 cursor-pointer rounded-lg border-2 border-neutral-600 text-sm font-bold text-white transition-all duration-300 hover:bg-neutral-700 md:text-xl">
-      {children}
-    </div>
+    </Center>
   );
 };
