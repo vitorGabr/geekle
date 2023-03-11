@@ -1,4 +1,5 @@
 import { KeyBoard } from "@/components/Keyboard";
+import { Navbar } from "@/components/Navbar";
 import { Words } from "@/components/Words";
 import { createContext } from "@/server/context";
 import { appRouter } from "@/server/routes/_app";
@@ -7,6 +8,7 @@ import { ResultWord } from "@/types/ResultWord";
 import { trpc } from "@/utils/trpc";
 import { Box, Container, Flex } from "@chakra-ui/react";
 import { createProxySSGHelpers } from '@trpc/react-query/ssg';
+import Head from "next/head";
 import { useState, useEffect, useMemo } from "react";
 
 export default function Home() {
@@ -109,10 +111,17 @@ export default function Home() {
         h={"100vh"}
         w={"100vw"}
         bgColor={"black"}
+        flexFlow={"column"}
+        display={"flex"}
     >
+        <Head>
+            <title>Quizle - Um jogo de adivinhação de palavras</title>
+            <meta name="description" content="Quizle - Um jogo de adivinhação de palavras" />
+        </Head>
+        <Navbar />
         <Container
             maxW={"container.xl"}
-            h={"100%"}
+            flex={1}
             as={Flex}
             flexDirection={"column"}
         >
