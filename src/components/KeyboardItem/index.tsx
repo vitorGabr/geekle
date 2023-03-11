@@ -11,6 +11,20 @@ type Props = {
 };
 
 export const KeyBoardItem = ({ onClick, value, result }: Props) => {
+
+  let bg: ComponentProps<typeof Center>['bgColor'] = useMemo(() => {
+    switch (result) {
+      case WordResultType.CORRECT:
+        return 'green.600';
+      case WordResultType.INCORRECT:
+        return 'red.600';
+      case WordResultType.ALMOST:
+        return 'yellow.600';
+      default:
+        return 'gray.800';
+    }
+  }, [result]);
+
   if (value === 'Backspace') {
     return (
       <Center
@@ -45,19 +59,6 @@ export const KeyBoardItem = ({ onClick, value, result }: Props) => {
       </Center>
     );
   }
-
-  let bg: ComponentProps<typeof Center>['bgColor'] = useMemo(() => {
-    switch (result) {
-      case WordResultType.CORRECT:
-        return 'green.600';
-      case WordResultType.INCORRECT:
-        return 'red.600';
-      case WordResultType.ALMOST:
-        return 'yellow.600';
-      default:
-        return 'gray.800';
-    }
-  }, [result]);
 
   return (
     <Center
