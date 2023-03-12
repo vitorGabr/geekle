@@ -4,7 +4,7 @@ import { procedure, router } from '../trpc';
 
 export const appRouter = router({
     wordDay: procedure
-        .query(async ({ input, ctx }) => {
+        .query(async ({ ctx }) => {
             const result = await ctx.prisma.word.findFirst({
                 where: {
                     to: {

@@ -28,24 +28,24 @@ export const WordItem = ({ onClick, value, isFocused, result }: Props) => {
     return <Center
         onClick={onClick}
         w={{
-            base: '4.5rem',
+            base: '4rem',
             md: '3.2rem',
         }}
         h={{
-            base: '4.5rem',
+            base: '4rem',
             md: '3.2rem',
         }}
         rounded="lg"
         border="2px"
         borderColor={border}
         bgColor={bg}
+        backdropBlur="lg"
         fontWeight="bold"
         color="white"
         cursor="pointer"
         transition="all 0.3s"
         fontSize={{
-            base: '1rem',
-            md: '1.5rem',
+            base: '1.5rem',
         }}
     >
         {value?.toUpperCase()}

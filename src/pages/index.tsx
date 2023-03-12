@@ -1,3 +1,5 @@
+import { BadgeStatus } from "@/components/BadgeStatus";
+import { CompletedGameModal } from "@/components/CompletedGameModal";
 import { KeyBoard } from "@/components/Keyboard";
 import { Navbar } from "@/components/Navbar";
 import { Words } from "@/components/Words";
@@ -6,7 +8,7 @@ import { appRouter } from "@/server/routes/_app";
 import { WordResultType } from "@/types/enums/WordResultType";
 import { ResultWord } from "@/types/ResultWord";
 import { trpc } from "@/utils/trpc";
-import { Box, Container, Flex } from "@chakra-ui/react";
+import { Box, Container, Flex, useDisclosure } from "@chakra-ui/react";
 import { createProxySSGHelpers } from '@trpc/react-query/ssg';
 import Head from "next/head";
 import { useState, useEffect, useMemo } from "react";
@@ -20,6 +22,11 @@ export default function Home() {
     const [currentItem, setCurrentItem] = useState(0);
     const [words, setWords] = useState<ResultWord[]>([]);
     const [showCompletedGame, setShowCompletedGame] = useState(false);
+    const completedGame = useDisclosure();
+    const [badgeStatus, setBadgeStatus] = useState({
+        isOpen: true,
+        value: '',
+    });
 
     const expectedWordLenght = expectedWord.length;
     const [word, setWord] = useState<string>(new Array(expectedWordLenght).fill(' ').join(''));
@@ -30,6 +37,19 @@ export default function Home() {
         const newWord = word.split('');
 
         if (e.key === 'Enter') {
+            if (word === expectedWord) {
+                setBadgeStatus({
+                    isOpen: true,
+                    value: 'Parabéns! Você acertou a palavra!',
+                });
+            }
+            if (word !== expectedWord && currentRow === 5) {
+                setBadgeStatus({
+                    isOpen: true,
+                    value: 'A palavra certa é: ' + expectedWord + '',
+                });
+            }
+
             if (newWord.filter((k) => k != ' ').length < expectedWordLenght) {
                 return;
             }
@@ -110,9 +130,9 @@ export default function Home() {
     return <Box
         h={"100vh"}
         w={"100vw"}
-        bgColor={"black"}
         flexFlow={"column"}
         display={"flex"}
+        bg={"black"}
     >
         <Head>
             <title>Quizle - Um jogo de adivinhação de palavras</title>
@@ -125,6 +145,9 @@ export default function Home() {
             as={Flex}
             flexDirection={"column"}
         >
+            {
+                badgeStatus.isOpen && <BadgeStatus value={badgeStatus.value} />
+            }
             <Words
                 setCurrentItem={setCurrentItem}
                 expectedWordLenght={expectedWordLenght}
@@ -138,6 +161,12 @@ export default function Home() {
                 wordResult={typedWord}
             />
         </Container>
+        {
+            <CompletedGameModal
+                isOpen={completedGame.isOpen}
+                onClose={completedGame.onClose}
+            />
+        }
     </Box>
 }
 
@@ -148,10 +177,18 @@ export const getStaticProps = async () => {
 
     });
 
-    await ssg.wordDay.fetch();
-    return {
-        props: {
-            trpcState: ssg.dehydrate(),
-        },
-    };
+    try {
+        await ssg.wordDay.fetch();
+        return {
+            props: {
+                trpcState: ssg.dehydrate(),
+            },
+        };
+    } catch (error) {
+        return {
+            notFound: true,
+        }
+    }
+
+
 }
