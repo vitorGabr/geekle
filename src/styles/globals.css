@@ -8,8 +8,18 @@
   margin: 0;
 }
 
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+html {
+  height: -webkit-fill-available;
+}
+
 html,
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background-image: radial-gradient(circle, #0edfa7, #00a5a9, #006b86, #22364a, #0a0a0a);
+  background: black;
+
 }
