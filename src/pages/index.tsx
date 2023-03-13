@@ -140,8 +140,8 @@ export default function Home() {
     }, [history]);
 
     return <Box
-        h={"100vh"}
         w={"100vw"}
+        minH={"100vh"}
         flexFlow={"column"}
         display={"flex"}
         bg={"black"}
