@@ -22,6 +22,7 @@ export const appRouter = router({
 
             return {
                 word: result.word,
+                id: result.id,
             };
         })
 });

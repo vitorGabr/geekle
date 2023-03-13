@@ -1,5 +1,6 @@
 import { ResultWord } from "@/types/ResultWord";
 import { Stack, Flex } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { WordItem } from "./WordItem";
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
     word: string;
     currentItem: number;
     setCurrentItem: (item: number) => void;
+    onChangeKey: (key: KeyboardEvent) => void;
 }
 
 export const Words = ({
@@ -18,7 +20,17 @@ export const Words = ({
     word,
     currentItem,
     setCurrentItem,
+    onChangeKey,
 }: Props) => {
+
+    useEffect(() => {
+        document.addEventListener('keydown', onChangeKey);
+
+        return function cleanup() {
+            document.removeEventListener('keydown', onChangeKey);
+        };
+    }, [currentItem, word]);
+
     return <Stack
         spacing={1}
         w={"100%"}
@@ -48,9 +60,7 @@ export const Words = ({
                                     ? words[index].result[idx]
                                     : undefined}
                                 isFocused={currentItem === idx && index === currentRow}
-                                onClick={() => {
-                                    setCurrentItem(idx);
-                                }}
+                                onClick={() => index === currentRow && setCurrentItem(idx)}
                             />
                         );
                     })}

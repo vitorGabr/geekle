@@ -3,9 +3,11 @@ import { CompletedGameModal } from "@/components/CompletedGameModal";
 import { KeyBoard } from "@/components/Keyboard";
 import { Navbar } from "@/components/Navbar";
 import { Words } from "@/components/Words";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { createContext } from "@/server/context";
 import { appRouter } from "@/server/routes/_app";
 import { WordResultType } from "@/types/enums/WordResultType";
+import { HistoryStorage } from "@/types/HistoryStorage";
 import { ResultWord } from "@/types/ResultWord";
 import { trpc } from "@/utils/trpc";
 import { Box, Container, Flex, useDisclosure } from "@chakra-ui/react";
@@ -17,42 +19,31 @@ export default function Home() {
 
     const { data } = trpc.wordDay.useQuery();
     const expectedWord = data?.word || 'word';
+    const completedGame = useDisclosure();
+    const expectedWordLenght = expectedWord.length;
 
+    const [history, setHistory] = useLocalStorage<HistoryStorage>('history', {
+        [`${data?.id || 0}`]: {
+            history: [],
+            completed: false,
+        }
+    });
+    const [word, setWord] = useState<string>(new Array(expectedWordLenght).fill(' ').join(''));
     const [currentRow, setCurrentRow] = useState(0);
     const [currentItem, setCurrentItem] = useState(0);
     const [words, setWords] = useState<ResultWord[]>([]);
     const [showCompletedGame, setShowCompletedGame] = useState(false);
-    const completedGame = useDisclosure();
     const [badgeStatus, setBadgeStatus] = useState({
         isOpen: true,
         value: '',
     });
 
-    const expectedWordLenght = expectedWord.length;
-    const [word, setWord] = useState<string>(new Array(expectedWordLenght).fill(' ').join(''));
-
-
     const handleKeyDown = async (e: KeyboardEvent) => {
         if (showCompletedGame) return;
         const newWord = word.split('');
+        if (newWord.filter((k) => k != ' ').length < expectedWordLenght) return;
 
         if (e.key === 'Enter') {
-            if (word === expectedWord) {
-                setBadgeStatus({
-                    isOpen: true,
-                    value: 'Parabéns! Você acertou a palavra!',
-                });
-            }
-            if (word !== expectedWord && currentRow === 5) {
-                setBadgeStatus({
-                    isOpen: true,
-                    value: 'A palavra certa é: ' + expectedWord + '',
-                });
-            }
-
-            if (newWord.filter((k) => k != ' ').length < expectedWordLenght) {
-                return;
-            }
             const expectedWordAlmost = word
                 .split('')
                 .filter((w, i) => expectedWord.includes(w) && w !== expectedWord[i])
@@ -67,18 +58,36 @@ export default function Home() {
                 }
                 return WordResultType.INCORRECT;
             });
-
-            setCurrentRow(currentRow + 1);
-            setWords([...words, {
+            const wordResult = {
                 value: word,
                 result,
-            }]);
+            }
+            let storage = {
+                ...history,
+                [`${data?.id || 0}`]: {
+                    ...history[`${data?.id || 0}`],
+                    history: [...history[`${data?.id || 0}`]?.history || [], wordResult],
+                }
+            }
+
+            setCurrentRow(currentRow + 1);
+            setWords([...words, wordResult]);
             setCurrentItem(0);
             setWord(new Array(expectedWordLenght).fill(' ').join(''));
             if (word === expectedWord) {
+                setBadgeStatus({
+                    isOpen: true,
+                    value: 'Parabéns! Você acertou a palavra!',
+                });
                 setShowCompletedGame(true);
-                return;
+                storage[`${data?.id || 0}`].completed = true;
+            } else {
+                setBadgeStatus({
+                    isOpen: true,
+                    value: 'A palavra certa é: ' + expectedWord + '',
+                });
             }
+            setHistory(storage);
             return;
         }
         if (e.key === 'Backspace') {
@@ -120,12 +129,15 @@ export default function Home() {
     }, [words])
 
     useEffect(() => {
-        document.addEventListener('keydown', handleKeyDown);
-
-        return function cleanup() {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [currentItem, word]);
+        if (Object.keys(history).length > 0) {
+            const historyStorage = history[`${data?.id || 0}`];
+            if (historyStorage) {
+                setShowCompletedGame(historyStorage.completed);
+                setWords(historyStorage.history);
+                setCurrentRow(historyStorage.history.length);
+            }
+        }
+    }, [history]);
 
     return <Box
         h={"100vh"}
@@ -149,6 +161,7 @@ export default function Home() {
                 badgeStatus.isOpen && <BadgeStatus value={badgeStatus.value} />
             }
             <Words
+                onChangeKey={handleKeyDown}
                 setCurrentItem={setCurrentItem}
                 expectedWordLenght={expectedWordLenght}
                 word={word}

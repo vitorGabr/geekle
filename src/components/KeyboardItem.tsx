@@ -1,5 +1,4 @@
 import { WordResultType } from '@/types/enums/WordResultType';
-import { ResultWord } from '@/types/ResultWord';
 import { Center } from '@chakra-ui/react';
 import { Delete } from 'lucide-react';
 import { ComponentProps, useMemo } from 'react';
@@ -80,6 +79,7 @@ export const KeyBoardItem = ({ onClick, value, result }: Props) => {
             _hover={{
                 bg: 'gray.700',
             }}
+            transition="all ease 0.2s"
         >
             {value?.toLocaleUpperCase()}
         </Center>
