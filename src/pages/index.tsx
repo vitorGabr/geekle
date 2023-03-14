@@ -35,7 +35,7 @@ export default function Home() {
   const [words, setWords] = useState<ResultWord[]>([]);
   const [showCompletedGame, setShowCompletedGame] = useState(false);
   const [badgeStatus, setBadgeStatus] = useState({
-    isOpen: true,
+    isOpen: false,
     value: '',
   });
 
@@ -214,6 +214,7 @@ export const getStaticProps = async () => {
       props: {
         trpcState: ssg.dehydrate(),
       },
+      revalidate: 60 * 60 * 24,
     };
   } catch (error) {
     return {
