@@ -47,7 +47,6 @@ export default function Home() {
               }
             : null
         )
-        .filter((item) => !!item)
         .filter((item, index, self) => {
           const _rp = self
             .filter((el) => el?.value == item?.value)
