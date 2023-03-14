@@ -60,28 +60,30 @@ export const KeyBoardItem = ({ onClick, value, result }: Props) => {
     }
 
     return (
-        <Center
-            onClick={onClick}
-            w={{
-                base: '10%',
-                md: '3.5vw',
-            }}
-            h={{
-                base: '8vh',
-                md: '3.5vw',
-            }}
-            bgColor={bg}
-            rounded="lg"
-            color={'white'}
-            fontSize="xl"
-            fontWeight={'bold'}
-            cursor="pointer"
-            _hover={{
-                bg: 'gray.700',
-            }}
-            transition="all ease 0.2s"
-        >
-            {value?.toLocaleUpperCase()}
-        </Center>
+      <Center
+        onClick={onClick}
+        w={{
+          base: '10%',
+          md: '3.5vw',
+        }}
+        h={{
+          base: '8vh',
+          md: '3.5vw',
+        }}
+        maxW={20}
+        maxH={20}
+        bgColor={bg}
+        rounded="lg"
+        color={'white'}
+        fontSize={['xl', 'xl', 'xl', '2xl']}
+        fontWeight={'bold'}
+        cursor="pointer"
+        _hover={{
+          bg: 'gray.700',
+        }}
+        transition="all ease 0.2s"
+      >
+        {value?.toLocaleUpperCase()}
+      </Center>
     );
 };

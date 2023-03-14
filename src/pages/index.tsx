@@ -18,7 +18,6 @@ import { useState, useEffect, useMemo } from 'react';
 export default function Home() {
   const { data } = trpc.wordDay.useQuery();
   const expectedWord = data?.word || 'word';
-  const completedGame = useDisclosure();
   const expectedWordLenght = expectedWord.length;
 
   const [history, setHistory] = useLocalStorage<HistoryStorage>('history', {
@@ -33,28 +32,41 @@ export default function Home() {
   const [currentRow, setCurrentRow] = useState(0);
   const [currentItem, setCurrentItem] = useState(0);
   const [words, setWords] = useState<ResultWord[]>([]);
-  const [showCompletedGame, setShowCompletedGame] = useState(false);
+  const [completedGame, setCompletedGame] = useState(true);
   const [badgeStatus, setBadgeStatus] = useState({
-    isOpen: false,
+    isOpen: true,
     value: '',
   });
 
   const handleKeyDown = async (e: KeyboardEvent) => {
-    if (showCompletedGame) return;
+    if (completedGame) return;
     const newWord = word.split('');
     if (e.key === 'Enter') {
       if (newWord.filter((k) => k != ' ').length < expectedWordLenght) return;
 
-      const expectedWordAlmost = word
-        .split('')
-        .filter((w, i) => expectedWord.includes(w) && w !== expectedWord[i])
-        .map((item) => word.indexOf(item));
+      const correctsWord = newWord.filter((w, i) => w === expectedWord[i]);
+      let expectedsWords = newWord
+        .map((w, i) =>
+          expectedWord.includes(w) && w !== expectedWord[i]
+            ? {
+                index: i,
+                value: w,
+              }
+            : null
+        )
+        .filter(
+          (value, index, self) =>
+            index === self.findIndex((t) => t?.value === value?.value)
+        );
 
-      const result = word.split('').map((w, i) => {
+      const result = newWord.map((w, i) => {
         if (w === expectedWord[i]) {
           return WordResultType.CORRECT;
         }
-        if (expectedWordAlmost.length > 0 && expectedWordAlmost.includes(i)) {
+        if (
+          expectedsWords.some((w) => w?.index == i) &&
+          !correctsWord.includes(w)
+        ) {
           return WordResultType.ALMOST;
         }
         return WordResultType.INCORRECT;
@@ -83,7 +95,7 @@ export default function Home() {
           isOpen: true,
           value: 'Parabéns! Você acertou a palavra!',
         });
-        setShowCompletedGame(true);
+        setCompletedGame(true);
         storage[`${data?.id || 0}`].completed = true;
       }
       if (word !== expectedWord && currentRow === 5) {
@@ -142,16 +154,16 @@ export default function Home() {
     return function cleanup() {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [currentItem, word]);
+  }, [currentItem, word, completedGame]);
 
   useEffect(() => {
     if (Object.keys(history).length > 0) {
       const historyStorage = history[`${data?.id || 0}`];
       if (historyStorage) {
-        console.log(historyStorage);
-        setShowCompletedGame(historyStorage.completed);
+        setCompletedGame(historyStorage.completed);
         setWords(historyStorage.history);
         setCurrentRow(historyStorage.history.length);
+        return;
       }
     }
   }, [history]);
@@ -178,8 +190,8 @@ export default function Home() {
         as={Flex}
         flexDirection={'column'}
       >
-        {badgeStatus.isOpen && <BadgeStatus value={badgeStatus.value} />}
         <Words
+          badgeStatus={badgeStatus.value}
           setCurrentItem={setCurrentItem}
           expectedWordLenght={expectedWordLenght}
           word={word}
@@ -192,12 +204,12 @@ export default function Home() {
           wordResult={typedWord}
         />
       </Container>
-      {
+      {/* {
         <CompletedGameModal
           isOpen={completedGame.isOpen}
           onClose={completedGame.onClose}
         />
-      }
+      } */}
     </Box>
   );
 }

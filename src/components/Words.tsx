@@ -1,6 +1,7 @@
 import { ResultWord } from "@/types/ResultWord";
 import { Stack, Flex } from "@chakra-ui/react";
 import { useEffect } from "react";
+import { BadgeStatus } from './BadgeStatus';
 import { WordItem } from "./WordItem";
 
 type Props = {
@@ -10,6 +11,7 @@ type Props = {
   word: string;
   currentItem: number;
   setCurrentItem: (item: number) => void;
+  badgeStatus?: string;
 };
 
 export const Words = ({
@@ -19,6 +21,7 @@ export const Words = ({
   word,
   currentItem,
   setCurrentItem,
+  badgeStatus,
 }: Props) => {
   return (
     <Stack
@@ -28,6 +31,8 @@ export const Words = ({
       justifyContent={'center'}
       alignItems={'center'}
     >
+      {badgeStatus && <BadgeStatus value={badgeStatus} />}
+
       {[...Array(6)].map((_, index) => {
         const isTyping = currentRow === index;
         return (
