@@ -1,5 +1,3 @@
-import { BadgeStatus } from '@/components/BadgeStatus';
-import { CompletedGameModal } from '@/components/CompletedGameModal';
 import { KeyBoard } from '@/components/Keyboard';
 import { Navbar } from '@/components/Navbar';
 import { Words } from '@/components/Words';
@@ -10,15 +8,16 @@ import { WordResultType } from '@/types/enums/WordResultType';
 import { HistoryStorage } from '@/types/HistoryStorage';
 import { ResultWord } from '@/types/ResultWord';
 import { trpc } from '@/utils/trpc';
-import { Box, Container, Flex, useDisclosure } from '@chakra-ui/react';
+import { Box, Container, Flex } from '@chakra-ui/react';
 import { createProxySSGHelpers } from '@trpc/react-query/ssg';
 import Head from 'next/head';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 
 export default function Home() {
   const { data } = trpc.wordDay.useQuery();
   const expectedWord = data?.word || 'word';
   const expectedWordLenght = expectedWord.length;
+  const completedGame = useRef(true);
 
   const [history, setHistory] = useLocalStorage<HistoryStorage>('history', {
     [`${data?.id || 0}`]: {
@@ -26,20 +25,14 @@ export default function Home() {
       completed: false,
     },
   });
-  const [word, setWord] = useState<string>(
-    new Array(expectedWordLenght).fill(' ').join('')
-  );
+  const [word, setWord] = useState<string>(''.padEnd(expectedWordLenght));
   const [currentRow, setCurrentRow] = useState(0);
   const [currentItem, setCurrentItem] = useState(0);
   const [words, setWords] = useState<ResultWord[]>([]);
-  const [completedGame, setCompletedGame] = useState(true);
-  const [badgeStatus, setBadgeStatus] = useState({
-    isOpen: true,
-    value: '',
-  });
+  const [badgeStatus, setBadgeStatus] = useState<string | undefined>(undefined);
 
   const handleKeyDown = async (e: KeyboardEvent) => {
-    if (completedGame) return;
+    if (completedGame.current) return;
     const newWord = word.split('');
     if (e.key === 'Enter') {
       if (newWord.filter((k) => k != ' ').length < expectedWordLenght) return;
@@ -54,19 +47,22 @@ export default function Home() {
               }
             : null
         )
-        .filter(
-          (value, index, self) =>
-            index === self.findIndex((t) => t?.value === value?.value)
-        );
-
+        .filter((item) => !!item)
+        .filter((item, index, self) => {
+          const _rp = self
+            .filter((el) => el?.value == item?.value)
+            .indexOf(item);
+          return (
+            _rp <
+            expectedWord.split('').filter((el) => item?.value === el).length -
+              correctsWord.filter((el) => item?.value === el).length
+          );
+        });
       const result = newWord.map((w, i) => {
         if (w === expectedWord[i]) {
           return WordResultType.CORRECT;
         }
-        if (
-          expectedsWords.some((w) => w?.index == i) &&
-          !correctsWord.includes(w)
-        ) {
+        if (expectedsWords.some((w) => w?.index == i)) {
           return WordResultType.ALMOST;
         }
         return WordResultType.INCORRECT;
@@ -85,24 +81,17 @@ export default function Home() {
           ],
         },
       };
-
       setCurrentRow(currentRow + 1);
       setWords([...words, wordResult]);
       setCurrentItem(0);
       setWord(new Array(expectedWordLenght).fill(' ').join(''));
       if (word === expectedWord) {
-        setBadgeStatus({
-          isOpen: true,
-          value: 'Parabéns! Você acertou a palavra!',
-        });
-        setCompletedGame(true);
+        setBadgeStatus('Parabéns! Você acertou a palavra!');
+        completedGame.current = true;
         storage[`${data?.id || 0}`].completed = true;
       }
       if (word !== expectedWord && currentRow === 5) {
-        setBadgeStatus({
-          isOpen: true,
-          value: 'A palavra certa é: ' + expectedWord + '',
-        });
+        setBadgeStatus('A palavra certa é: ' + expectedWord + '');
       }
       setHistory(storage);
       return;
@@ -150,7 +139,6 @@ export default function Home() {
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
-
     return function cleanup() {
       document.removeEventListener('keydown', handleKeyDown);
     };
@@ -160,7 +148,7 @@ export default function Home() {
     if (Object.keys(history).length > 0) {
       const historyStorage = history[`${data?.id || 0}`];
       if (historyStorage) {
-        setCompletedGame(historyStorage.completed);
+        completedGame.current = historyStorage.completed;
         setWords(historyStorage.history);
         setCurrentRow(historyStorage.history.length);
         return;
@@ -191,7 +179,7 @@ export default function Home() {
         flexDirection={'column'}
       >
         <Words
-          badgeStatus={badgeStatus.value}
+          badgeStatus={badgeStatus}
           setCurrentItem={setCurrentItem}
           expectedWordLenght={expectedWordLenght}
           word={word}
